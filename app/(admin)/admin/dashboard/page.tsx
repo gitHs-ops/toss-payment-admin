@@ -13,14 +13,14 @@ interface KpiCardProps {
 
 function KpiCard({ label, value, sub, icon, iconBg, accent }: KpiCardProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-md p-6">
-      <div className="flex items-start justify-between mb-4">
+    <div className="bg-white rounded-xl border border-gray-200 shadow-md p-3.5 md:p-6">
+      <div className="flex items-start justify-between mb-2 md:mb-4">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{label}</p>
-        <span className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconBg}`}>
+        <span className={`w-6 h-6 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>
           {icon}
         </span>
       </div>
-      <p className={`text-2xl font-semibold mb-1 ${accent}`}>{value}</p>
+      <p className={`text-lg md:text-2xl font-semibold mb-0.5 md:mb-1 ${accent}`}>{value}</p>
       <p className="text-xs text-gray-400">{sub}</p>
     </div>
   );
@@ -102,18 +102,18 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-xl font-semibold text-gray-900">대시보드</h1>
-        <p className="text-sm text-gray-400 mt-0.5">결제 현황을 한눈에 확인하세요.</p>
+      <div className="mb-4 md:mb-8">
+        <h1 className="text-lg md:text-xl font-semibold text-gray-900">대시보드</h1>
+        <p className="text-xs md:text-sm text-gray-400 mt-0.5">결제 현황을 한눈에 확인하세요.</p>
       </div>
 
       {/* KPI */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-4 mb-5 md:mb-8">
         {kpis.map((k) => <KpiCard key={k.label} {...k} />)}
       </div>
 
       {/* 최근 결제 */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-md p-6">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-md p-3.5 md:p-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-sm font-semibold text-gray-900">최근 결제</h2>
           <Link href="/admin/payments"

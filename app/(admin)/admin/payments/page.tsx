@@ -55,16 +55,16 @@ export default async function PaymentsPage({ searchParams }: PageProps) {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-xl font-semibold text-gray-900">결제 내역</h1>
+      <div className="mb-4 md:mb-8">
+        <h1 className="text-lg md:text-xl font-semibold text-gray-900">결제 내역</h1>
         <p className="text-sm text-gray-400 mt-0.5">
           총 <strong className="text-gray-700">{total.toLocaleString()}</strong>건
         </p>
       </div>
 
       {/* 필터 */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-md p-6 mb-5">
-        <form method="GET" action="/admin/payments" className="flex flex-wrap gap-2.5 items-end">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-md p-3.5 md:p-6 mb-4 md:mb-5">
+        <form method="GET" action="/admin/payments" className="flex flex-wrap gap-2 md:gap-2.5 items-end">
           <div className="flex-1 min-w-48">
             <label className="block text-xs font-medium text-gray-400 mb-1.5">검색</label>
             <input
@@ -118,7 +118,7 @@ export default async function PaymentsPage({ searchParams }: PageProps) {
       </div>
 
       {/* 테이블 */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-md p-6">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-md p-2.5 md:p-6">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

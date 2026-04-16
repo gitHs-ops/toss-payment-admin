@@ -35,30 +35,32 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="flex h-screen bg-slate-100 overflow-hidden">
       {/* ── Sidebar ──────────────────────────────────────── */}
-      <aside className="w-56 bg-white border-r border-gray-200 flex flex-col shrink-0">
+      {/* 모바일: 아이콘만(w-14), 데스크탑: 전체(w-52) */}
+      <aside className="w-14 md:w-52 bg-white border-r border-gray-200 flex flex-col shrink-0 transition-all duration-200">
         {/* Logo */}
-        <div className="px-5 py-5 border-b border-gray-100">
+        <div className="px-3 md:px-5 py-4 md:py-5 border-b border-gray-100 flex items-center justify-center md:justify-start">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm shadow-blue-200">
+            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm shadow-blue-200 shrink-0">
               <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-gray-900">Payments</span>
+            <span className="hidden md:block text-sm font-semibold text-gray-900">Payments</span>
           </div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <nav className="flex-1 px-1.5 md:px-3 py-3 md:py-4 space-y-0.5">
           {NAV.map((item) => (
             <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
           ))}
         </nav>
 
         {/* User */}
-        <div className="px-3 py-4 border-t border-gray-100">
-          <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-gray-50 mb-1">
+        <div className="px-1.5 md:px-3 py-3 md:py-4 border-t border-gray-100">
+          {/* 데스크탑: 이름+이메일, 모바일: 아바타만 */}
+          <div className="hidden md:flex items-center gap-2.5 px-3 py-2 rounded-lg bg-gray-50 mb-1">
             <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-xs font-semibold text-white shrink-0">
               {initial}
             </div>
@@ -69,23 +71,31 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <p className="text-xs text-gray-400 truncate">{session.user.email}</p>
             </div>
           </div>
+          {/* 모바일: 아바타 중앙 */}
+          <div className="flex md:hidden items-center justify-center py-1 mb-1">
+            <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs font-semibold text-white">
+              {initial}
+            </div>
+          </div>
+          {/* 로그아웃 */}
           <a
             href="/api/auth/signout"
-            className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400
+            title="로그아웃"
+            className="flex items-center justify-center md:justify-start gap-2 px-2 md:px-3 py-2 text-xs text-gray-400
                        hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            로그아웃
+            <span className="hidden md:block">로그아웃</span>
           </a>
         </div>
       </aside>
 
       {/* ── Main ─────────────────────────────────────────── */}
       <main className="flex-1 overflow-y-auto">
-        <div className="px-8 py-7 max-w-6xl">{children}</div>
+        <div className="px-3 py-4 md:px-8 md:py-7 max-w-6xl">{children}</div>
       </main>
     </div>
   );

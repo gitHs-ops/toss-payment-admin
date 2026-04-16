@@ -16,16 +16,17 @@ export default function NavLink({ href, icon, label }: Props) {
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+      title={label}
+      className={`flex items-center justify-center md:justify-start gap-2.5 px-2 md:px-3 py-2.5 md:py-2 rounded-lg text-sm transition-colors ${
         isActive
           ? "bg-blue-50 text-blue-700 font-semibold"
           : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
       }`}
     >
-      <span className={`transition-colors ${isActive ? "text-blue-600" : "text-gray-400"}`}>
+      <span className={`shrink-0 transition-colors ${isActive ? "text-blue-600" : "text-gray-400"}`}>
         {icon}
       </span>
-      {label}
+      <span className="hidden md:block">{label}</span>
     </Link>
   );
 }
