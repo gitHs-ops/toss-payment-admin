@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 // app/api/payments/virtual-account/webhook/route.ts
 // 토스페이먼츠 가상계좌 입금 완료 웹훅 수신
 

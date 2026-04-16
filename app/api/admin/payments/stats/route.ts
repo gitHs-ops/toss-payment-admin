@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 // app/api/admin/payments/stats/route.ts
 // 대시보드 KPI 통계 — Admin 전용
 

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 // app/api/admin/payments/route.ts
 // 어드민 결제 목록 조회 — Admin 전용
 

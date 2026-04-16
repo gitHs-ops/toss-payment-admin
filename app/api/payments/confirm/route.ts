@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 // app/api/payments/confirm/route.ts
 // 토스페이먼츠 결제 최종 승인 처리
 

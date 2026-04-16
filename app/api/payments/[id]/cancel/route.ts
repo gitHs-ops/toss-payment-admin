@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 // app/api/payments/[id]/cancel/route.ts
 // 결제 취소(환불) — Admin 전용
 
