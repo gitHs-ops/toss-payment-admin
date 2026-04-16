@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 시스템 비교 분석 보고서</title>
+    <style>
+        :root {
+            --primary-color: #3182f6;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --text-main: #191f28;
+            --text-sub: #4e5968;
+            --border-color: #e5e8eb;
+            --accent-color: #f2f4f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        header {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .meta-info {
+            color: var(--text-sub);
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 20px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 12px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+            word-break: keep-all;
+        }
+
+        th {
+            background-color: var(--accent-color);
+            font-weight: 600;
+            color: var(--text-sub);
+            width: 25%;
+        }
+
+        .col-mypg { width: 37.5%; }
+        .col-toss { width: 37.5%; }
+
+        tr:hover {
+            background-color: #fbffff;
+        }
+
+        .highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .warning {
+            color: #f04452;
+            font-size: 0.9em;
+        }
+
+        .summary-card {
+            background-color: var(--accent-color);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .summary-card ul {
+            margin: 10px 0 0 20px;
+            padding: 0;
+        }
+
+        .summary-card li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            th, td { padding: 10px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>💳 결제 시스템 비교 분석 보고서</h1>
+        <div class="meta-info">
+            대상: <strong>myPG01</strong> (기존) vs <strong>toss-payment-admin</strong> (현재 프로젝트)
+        </div>
+    </header>
+
+    <!-- 1. 기술 스택 -->
+    <section>
+        <h2>1. 기술 스택 및 인프라</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>항목</th>
+                    <th class="col-mypg">myPG01</th>
+                    <th class="col-toss">toss-payment-admin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>디렉터리 구조</th>
+                    <td>src/app/</td>
+                    <td>app/ (App Router 직접)</td>
+                </tr>
+                <tr>
+                    <th>CSS 방식</th>
+                    <td>순수 CSS (Variables)</td>
+                    <td class="highlight">Tailwind CSS</td>
+                </tr>
+                <tr>
+                    <th>HTTP 클라이언트</th>
+                    <td>Axios</td>
+                    <td class="highlight">Native fetch</td>
+                </tr>
+                <tr>
+                    <th>DB</th>
+                    <td>SQLite (파일 기반)</td>
+                    <td class="highlight">PostgreSQL</td>
+                </tr>
+                <tr>
+                    <th>다크 모드</th>
+                    <td>✅ 지원</td>
+                    <td>❌ 미지원</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 2. 결제 SDK -->
+    <section>
+        <h2>2. 토스페이먼츠 SDK 비교</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>항목</th>
+                    <th class="col-mypg">myPG01</th>
+                    <th class="col-toss">toss-payment-admin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>SDK 버전</th>
+                    <td>payment-widget-sdk (구)</td>
+                    <td class="highlight">tosspayments-sdk (신)</td>
+                </tr>
+                <tr>
+                    <th>결제 UI</th>
+                    <td class="highlight">위젯 임베드 (페이지 내)</td>
+                    <td>리다이렉트 (외부 이동)</td>
+                </tr>
+                <tr>
+                    <th>약관 동의</th>
+                    <td>위젯 내 자동 포함</td>
+                    <td>별도 처리 없음</td>
+                </tr>
+                <tr>
+                    <th>UX 경험</th>
+                    <td>페이지 이탈 없음</td>
+                    <td>외부 결제창 이동 후 복귀</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 3. 인증 및 데이터 -->
+    <section>
+        <h2>3. 인증 및 데이터 모델링</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>항목</th>
+                    <th class="col-mypg">myPG01</th>
+                    <th class="col-toss">toss-payment-admin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>로그인 식별</th>
+                    <td>username</td>
+                    <td class="highlight">email</td>
+                </tr>
+                <tr>
+                    <th>비밀번호 보안</th>
+                    <td class="warning">평문 저장 (위험)</td>
+                    <td class="highlight">해시 저장 (bcrypt)</td>
+                </tr>
+                <tr>
+                    <th>사용자 연결</th>
+                    <td>❌ 없음</td>
+                    <td class="highlight">✅ FK 연동</td>
+                </tr>
+                <tr>
+                    <th>결제 상태</th>
+                    <td>3단계 (단순)</td>
+                    <td class="highlight">7단계 (상세)</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 4. 운영 기능 -->
+    <section>
+        <h2>4. 어드민 및 운영 기능</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>항목</th>
+                    <th class="col-mypg">myPG01</th>
+                    <th class="col-toss">toss-payment-admin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>UI 구조</th>
+                    <td>단일 페이지</td>
+                    <td class="highlight">대시보드 + 상세 페이지</td>
+                </tr>
+                <tr>
+                    <th>KPI 통계</th>
+                    <td>❌ 없음</td>
+                    <td class="highlight">✅ 매출/취소 통계</td>
+                </tr>
+                <tr>
+                    <th>환불 방식</th>
+                    <td>전액 취소만 가능</td>
+                    <td class="highlight">금액 지정 부분 취소</td>
+                </tr>
+                <tr>
+                    <th>목록 편의성</th>
+                    <td>단순 나열</td>
+                    <td class="highlight">검색/필터/페이징</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 종합 의견 -->
+    <section>
+        <h2>💡 종합 평가 및 제안</h2>
+        <div class="summary-card">
+            <strong>현재 상황 요약:</strong>
+            <ul>
+                <li><strong>myPG01:</strong> 프로토타입 단계이나, <strong>위젯 방식의 UX</strong>와 다크모드 대응이 장점임.</li>
+                <li><strong>toss-payment-admin:</strong> 보안, 확장성, 운영 편의성을 갖춘 <strong>실무 최적화 시스템</strong>임.</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>향후 개선 방향:</strong> <code>toss-payment-admin</code>의 견고한 설계 위에 <code>myPG01</code>의 <strong>임베드형 결제 위젯</strong> 로직을 결합하여 결제 전환율과 보안성을 동시에 확보할 것을 권장함.</p>
+        </div>
+    </section>
+</div>
+
+</body>
+</html>

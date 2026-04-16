@@ -1,0 +1,119 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── 사용자 ────────────────────────────────────────────────────────────────────
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts  Account[]
+  sessions  Session[]
+  payments  Payment[]
+}
+
+// ─── NextAuth 어댑터 필수 모델 ──────────────────────────────────────────────────
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── 결제 ────────────────────────────────────────────────────────────────────
+enum PaymentStatus {
+  PENDING                // 결제 대기
+  WAITING_FOR_DEPOSIT    // 가상계좌 입금 대기
+  DONE                   // 결제 완료
+  CANCELLED              // 전체 취소
+  PARTIAL_CANCELLED      // 부분 취소
+  FAILED                 // 결제 실패
+  ABORTED                // 결제 중단
+  EXPIRED                // 결제 만료
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  paymentKey    String?       @unique           // 토스페이먼츠 결제 키 (승인 후 설정)
+  orderId       String        @unique           // 주문 ID (클라이언트에서 UUID로 생성)
+  orderName     String                          // 주문명 / 상품명
+  amount        Int                             // 결제 금액 (원)
+  method        String?                         // 결제 수단 (카드, 가상계좌 등)
+  status        PaymentStatus @default(PENDING)
+
+  // 시각 정보
+  requestedAt   DateTime?                       // 결제 요청 시각
+  approvedAt    DateTime?                       // 승인 시각
+  cancelledAt   DateTime?                       // 취소 시각
+
+  // 취소 정보
+  cancelReason  String?
+  cancelAmount  Int?                            // 부분 취소 시 취소 금액
+
+  // 가상계좌 정보
+  virtualAccountNumber  String?                // 가상계좌 번호
+  virtualAccountBank    String?                // 발급 은행
+  virtualAccountHolder  String?                // 예금주
+  virtualAccountDueDate DateTime?              // 입금 기한
+
+  // 토스페이먼츠 원본 응답 저장 (장애 대응용)
+  rawResponse   Json?
+
+  // 관계
+  userId        String?
+  user          User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([approvedAt])
+}
