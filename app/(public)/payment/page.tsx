@@ -3,9 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { loadPaymentWidget, ANONYMOUS } from "@tosspayments/payment-widget-sdk";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore – installed on Vercel via package.json
-import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
 import type { PaymentWidgetInstance } from "@tosspayments/payment-widget-sdk";
 
 const AMOUNT = 10000;
@@ -111,8 +108,11 @@ export default function PaymentPage() {
       });
       if (!res.ok) throw new Error("주문 등록에 실패했습니다.");
 
-      // TossPayments SDK v2로 가상계좌 직접 요청
-      const tossPayments = await loadTossPayments(clientKey);
+      // TossPayments SDK v2로 가상계좌 직접 요청 (동적 import)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { loadTossPayments } = (await import("@tosspayments/tosspayments-sdk")) as any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const tossPayments: any = await loadTossPayments(clientKey);
       const customerKey = session?.user?.id ?? `ANON_${crypto.randomUUID()}`;
       const payment = tossPayments.payment({ customerKey });
 
