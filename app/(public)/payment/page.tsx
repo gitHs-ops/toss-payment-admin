@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import Script from "next/script";
 import { loadPaymentWidget, ANONYMOUS } from "@tosspayments/payment-widget-sdk";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore – installed on Vercel via package.json
+import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
 import type { PaymentWidgetInstance } from "@tosspayments/payment-widget-sdk";
 
 const AMOUNT = 10000;
@@ -19,27 +21,6 @@ const BANKS = [
   { code: "카카오뱅크", label: "카카오" },
   { code: "토스뱅크", label: "토스뱅크" },
 ];
-
-// TossPayments v1 CDN 전역 타입
-declare global {
-  interface Window {
-    TossPayments?: (clientKey: string) => {
-      requestPayment: (
-        method: string,
-        options: {
-          amount: number;
-          orderId: string;
-          orderName: string;
-          customerName?: string;
-          bank?: string;
-          successUrl: string;
-          failUrl: string;
-          validHours?: number;
-        }
-      ) => Promise<void>;
-    };
-  }
-}
 
 type Tab = "widget" | "virtual";
 
@@ -59,7 +40,6 @@ export default function PaymentPage() {
   const [validHours, setValidHours] = useState(24);
   const [vaLoading, setVaLoading] = useState(false);
   const [vaError, setVaError] = useState<string | null>(null);
-  const [tossV1Ready, setTossV1Ready] = useState(false);
 
   // ── 위젯 초기화 ────────────────────────────────────────────────
   useEffect(() => {
@@ -113,12 +93,8 @@ export default function PaymentPage() {
     }
   };
 
-  // ── 가상계좌 결제 실행 ─────────────────────────────────────────
+  // ── 가상계좌 결제 실행 (TossPayments SDK v2) ──────────────────
   const handleVirtualAccountPayment = async () => {
-    if (!tossV1Ready || !window.TossPayments) {
-      setVaError("결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
-      return;
-    }
     setVaLoading(true);
     setVaError(null);
     try {
@@ -135,17 +111,26 @@ export default function PaymentPage() {
       });
       if (!res.ok) throw new Error("주문 등록에 실패했습니다.");
 
-      // TossPayments v1 SDK로 가상계좌 직접 요청
-      const tossPayments = window.TossPayments(clientKey);
-      await tossPayments.requestPayment("가상계좌", {
-        amount: AMOUNT,
+      // TossPayments SDK v2로 가상계좌 직접 요청
+      const tossPayments = await loadTossPayments(clientKey);
+      const customerKey = session?.user?.id ?? `ANON_${crypto.randomUUID()}`;
+      const payment = tossPayments.payment({ customerKey });
+
+      await payment.requestPayment({
+        method: "VIRTUAL_ACCOUNT",
+        amount: { currency: "KRW", value: AMOUNT },
         orderId,
         orderName: ORDER_NAME,
         customerName: session?.user?.name ?? "고객",
-        bank: selectedBank,
+        customerEmail: session?.user?.email ?? "guest@test.com",
         successUrl: `${window.location.origin}/payment/success`,
         failUrl: `${window.location.origin}/payment/fail`,
-        validHours,
+        virtualAccount: {
+          cashReceipt: { type: "소득공제" },
+          useEscrow: false,
+          validHours,
+          bank: selectedBank as "경남" | "광주" | "국민" | "기업" | "농협" | "대구" | "부산" | "새마을" | "수협" | "신한" | "씨티" | "우리" | "전북" | "제주" | "카카오뱅크" | "토스뱅크" | "하나" | "한국" | "SC제일" | "케이뱅크",
+        },
       });
     } catch (e: unknown) {
       setVaError(e instanceof Error ? e.message : "가상계좌 발급 중 오류가 발생했습니다.");
@@ -155,13 +140,6 @@ export default function PaymentPage() {
 
   return (
     <>
-      {/* TossPayments v1 SDK CDN 로드 (가상계좌용) */}
-      <Script
-        src="https://js.tosspayments.com/v1"
-        strategy="afterInteractive"
-        onLoad={() => setTossV1Ready(true)}
-      />
-
       <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 py-12 px-4">
         <div className="w-full max-w-lg mx-auto">
           {/* 헤더 */}
@@ -343,7 +321,7 @@ export default function PaymentPage() {
 
               <button
                 onClick={handleVirtualAccountPayment}
-                disabled={vaLoading || !tossV1Ready}
+                disabled={vaLoading}
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-blue-100 transition-all"
               >
                 {vaLoading ? (
@@ -354,12 +332,8 @@ export default function PaymentPage() {
                     </svg>
                     가상계좌 발급 중...
                   </span>
-                ) : !tossV1Ready ? (
+                ) : false ? (
                   <span className="flex items-center gap-2">
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                    </svg>
                     로딩 중...
                   </span>
                 ) : (
